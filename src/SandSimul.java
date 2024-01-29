@@ -1,6 +1,7 @@
 import java.util.Random;
 
 public class SandSimul {
+    private static final float INCR = .0001F;
     private float[][] simulation;
     private int[] dirs = {-1, 1};
     private int rows, cols, updated;
@@ -11,7 +12,7 @@ public class SandSimul {
         cols = 125;
         simulation = new float[rows][cols];
         updated = 1;
-        hue = .0001F;
+        hue = INCR;
     }
 
     public boolean validIndex(int i, int j) {
@@ -26,7 +27,7 @@ public class SandSimul {
             return true;
         }
         simulation[i][j] = hue;
-        hue = hue >= 1 ? 0 : hue + .0001F;
+        hue = hue >= 1 ? 0 : hue + INCR;
         return true;
     }
 

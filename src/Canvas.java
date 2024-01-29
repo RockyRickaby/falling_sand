@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -17,26 +18,18 @@ public class Canvas extends JFrame {
     private static final int SCALE = 5,
                              DELAY = 18;
 
+    private static Canvas instance = null;
     private static int cursorX = 0, cursorY = 0,
                        brushSize = 1;
 
-    private static Canvas instance = null;
     private SandSimul subCanvas;
     private Timer timer;
     private boolean isRunning;
 
     private Canvas() {
-        subCanvas = new SandSimul();
         isRunning = false;
-        timer = new Timer(DELAY, e -> {
-            if (isRunning) {
-                subCanvas.tick();
-                repaint();
-            }
-            if (subCanvas.isCurrentlyStatic()) {
-                isRunning = false;
-            }
-        });
+        subCanvas = new SandSimul();
+        timer = new Timer(DELAY, e -> update());
 
         this.setBackground(Color.black);
         this.setTitle("Falling Sand");
@@ -62,6 +55,31 @@ public class Canvas extends JFrame {
         repaint();
     }
 
+    private void update() {
+        if (isRunning) {
+            subCanvas.tick();
+            repaint();
+        }
+        if (subCanvas.isCurrentlyStatic()) {
+            isRunning = false;
+        }
+    }
+
+    private void askForBrushSize() {
+        String val = JOptionPane.showInputDialog(String.format("Type in the desired brush size (min = 1, max = 10)\nCurrent brush size: %d", brushSize));
+        if (val == null || val.isEmpty() || val.matches("[a-zA-Z. ]+")) {
+            JOptionPane.showMessageDialog(this, "Invalid input");
+            return;
+        }
+        int res = Integer.valueOf(val);
+        if (res >= 10) {
+            res = 10;
+        } else if (res <= 0) {
+            res = 1;
+        }
+        brushSize = res;
+    }
+
     private JMenuBar generateMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("File");
@@ -70,21 +88,9 @@ public class Canvas extends JFrame {
         menu.add(item);
         menuBar.add(menu);
 
-        menu = new JMenu("Game");
+        menu = new JMenu("Options");
         item = new JMenuItem("Change Brush Size");
-        item.addActionListener(e -> {
-            String val = JOptionPane.showInputDialog(String.format("Type in the desired brush size (min = 1, max = 10)\nCurrent brush size: %d", brushSize));
-            if (val == null || val.isEmpty() || val.matches("[a-zA-Z. ]+")) {
-                JOptionPane.showMessageDialog(this, "Invalid input");
-                return;
-            }
-            int res = Integer.valueOf(val);
-            if (res <= 10) {
-                brushSize = res <= 0 ? 1 : res;
-                return;
-            }
-            brushSize = res % 10;
-        });
+        item.addActionListener(e -> askForBrushSize());
         menu.add(item);
 
         item = new JMenuItem("Restart");
@@ -104,7 +110,7 @@ public class Canvas extends JFrame {
                 for (int i = 0; i < rows; i++) {
                     for (int j = 0; j < cols; j++) {
                         float state = subCanvas.state(i, j);
-                        g.setColor(state == 0 ? Color.BLACK : Color.getHSBColor(state, 1, 1));
+                        g.setColor(state == 0 ? Color.BLACK : Color.getHSBColor(state, .80F, 1));
                         g.fillRect(i * SCALE, j * SCALE, SCALE, SCALE);
                     }
                 }
