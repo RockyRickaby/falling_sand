@@ -4,7 +4,6 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -14,6 +13,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+/**
+ * The Canvas class serves mostly a single purpose: to let the user
+ * paint some pixels on the screen. Other of its purposes is to serve
+ * as a way to render the Falling Sand Simulator.
+ */
 public class Canvas extends JFrame {
     private static final int SCALE = 5,
                              DELAY = 18;
@@ -26,6 +30,9 @@ public class Canvas extends JFrame {
     private Timer timer;
     private boolean isRunning;
 
+    /**
+     * Creates a new empty Canvas.
+     */
     private Canvas() {
         isRunning = false;
         subCanvas = new SandSimul();
@@ -43,6 +50,10 @@ public class Canvas extends JFrame {
         timer.start();
     }
 
+    /**
+     * Returns the current instance of Canvas.
+     * @return
+     */
     public static Canvas getInstance() {
         if (instance == null) {
             instance = new Canvas();
@@ -50,11 +61,18 @@ public class Canvas extends JFrame {
         return instance;
     }
 
+    /**
+     * Clears this Canvas and the Subcanvas.
+     */
     private void reset() {
+        isRunning = false;
         subCanvas.reset();
         repaint();
     }
 
+    /**
+     * Updates the state of this Canvas and the Subcanvas.
+     */
     private void update() {
         if (isRunning) {
             subCanvas.tick();
@@ -65,9 +83,17 @@ public class Canvas extends JFrame {
         }
     }
 
+    /**
+     * Shows a popup asking for a new brush size.
+     * <p>
+     * Min.: 1, Max.: 10.
+     */
     private void askForBrushSize() {
         String val = JOptionPane.showInputDialog(String.format("Type in the desired brush size (min = 1, max = 10)\nCurrent brush size: %d", brushSize));
-        if (val == null || val.isEmpty() || val.matches("[a-zA-Z. ]+")) {
+        if (val == null) {
+            return;
+        }
+        if (val.isEmpty() || val.matches("[a-zA-Z. ]+")) {
             JOptionPane.showMessageDialog(this, "Invalid input");
             return;
         }
@@ -80,6 +106,10 @@ public class Canvas extends JFrame {
         brushSize = res;
     }
 
+    /**
+     * Generates this Frame's menu bar.
+     * @return the generated menu bar.
+     */
     private JMenuBar generateMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("File");
@@ -101,6 +131,10 @@ public class Canvas extends JFrame {
         return menuBar;
     }
 
+    /**
+     * Generates this Frame's canvas.
+     * @return the generated canvas.
+     */
     private JPanel generateCanvas() {
         JPanel canvas = new JPanel() {
             public void paintComponent(Graphics g) {
@@ -114,8 +148,8 @@ public class Canvas extends JFrame {
                         g.fillRect(i * SCALE, j * SCALE, SCALE, SCALE);
                     }
                 }
-                g.setColor(Color.WHITE);
-                g.fillRect(cursorX * SCALE, cursorY * SCALE, SCALE, SCALE);
+                // g.setColor(Color.WHITE);
+                // g.fillRect(cursorX * SCALE, cursorY * SCALE, SCALE, SCALE);
             }
         };
         canvas.addMouseListener(new MouseAdapter() {
@@ -129,12 +163,12 @@ public class Canvas extends JFrame {
             }
         });
         canvas.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                cursorX = e.getX() / SCALE;
-                cursorY = e.getY() / SCALE;
-                repaint();
-            }
+            // @Override
+            // public void mouseMoved(MouseEvent e) {
+            //     cursorX = e.getX() / SCALE;
+            //     cursorY = e.getY() / SCALE;
+            //     repaint();
+            // }
 
             @Override
             public void mouseDragged(MouseEvent e) {
