@@ -20,7 +20,7 @@ import javax.swing.Timer;
  */
 public class Canvas extends JFrame {
     private static final int SCALE = 5,
-                             DELAY = 18;
+                             DELAY = 17;
 
     private static Canvas instance = null;
     private static int cursorX = 0, cursorY = 0,
@@ -64,9 +64,9 @@ public class Canvas extends JFrame {
     /**
      * Clears this Canvas and the Subcanvas.
      */
-    private void reset() {
+    private void clear() {
         isRunning = false;
-        subCanvas.reset();
+        subCanvas.clear();
         repaint();
     }
 
@@ -123,8 +123,8 @@ public class Canvas extends JFrame {
         item.addActionListener(e -> askForBrushSize());
         menu.add(item);
 
-        item = new JMenuItem("Restart");
-        item.addActionListener(e -> reset());
+        item = new JMenuItem("Clear Canvas");
+        item.addActionListener(e -> clear());
         menu.add(item);
         menuBar.add(menu);
 

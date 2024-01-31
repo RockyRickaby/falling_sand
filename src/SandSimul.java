@@ -3,26 +3,28 @@ import java.util.Random;
 /**
  * This class is responsible for emulatiing the behavior of 
  * falling sand (albeit in a very basic manner). Each grain of 
- * sand has its own downwards velocity, which updates every tick.
+ * sand has its own falling velocity, which updates every tick.
+ * Each sand grain has an acceleration of exactly 1 pixel per
+ * tick squared.
  */
 public class SandSimul {
     /**
      * Private auxiliary class. Serves only to store
-     * the hue values of each point and their respective
+     * the hue values of each SandGrain and their respective
      * falling velocities.
      */
-    private static class Point {
-        private static final int MAX_VELOCITY = 10;
-        private int velocity;
-        private float value;
+    private static class SandGrain {
+        static final int MAX_VELOCITY = 11;
+        int velocity;
+        float hue_value;
 
         /**
-         * Creates a new Point which holds the value
-         * in {@code value}.
-         * @param value
+         * Creates a new SandGrain which holds the value
+         * in {@code hue_value}.
+         * @param hue_value
          */
-        public Point(float value) {
-            this.value = value;
+        public SandGrain(float hue_value) {
+            this.hue_value = hue_value;
             this.velocity = 1;
         }
 
@@ -42,21 +44,21 @@ public class SandSimul {
         }
 
         /**
-         * Resets velocity and the Point's {@code value}.
+         * Resets velocity and the SandGrain's {@code hue_value}.
          */
         public void resetPoint() {
             this.resetVelocity();
-            this.value = 0;
+            this.hue_value = 0;
         }
     }
 
-    private static final float INCR = .0001F;
-    private static final int[] dirs = {-1, 1};
+    private static final float POINT_VALUE_INCREMENT = .0001F;
+    private static final int[] DIRS = {-1, 1};
 
     // private float[][] simulation;
-    private Point[][] simul;
+    private SandGrain[][] simul;
     private int rows, cols, updated;
-    private float hue;
+    private float hue_value;
 
     /**
      * Creates a new empty Falling Sand Simulator.
@@ -65,15 +67,15 @@ public class SandSimul {
         rows = 125;
         cols = 125;
         // simulation = new float[rows][cols];
-        simul = new Point[rows][cols];
+        simul = new SandGrain[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 // simulation[i][j] = 0;
-                simul[i][j] = new Point(0);
+                simul[i][j] = new SandGrain(0);
             }
         }
         updated = 0;
-        hue = INCR;
+        hue_value = POINT_VALUE_INCREMENT;
     }
 
     /**
@@ -92,7 +94,7 @@ public class SandSimul {
      * @param i
      * @param j
      * @return {@code true} if it was possible to generate the grain
-     * of sand or it the given cell was already one.
+     * of sand or if the given cell was already one.
      */
     public boolean setOn(int i, int j) {
         updated = 1;
@@ -102,12 +104,12 @@ public class SandSimul {
         // if (simulation[i][j] > 0) {
         //     return true;
         // }
-        if (simul[i][j].value > 0) {
+        if (simul[i][j].hue_value > 0) {
             return true;
         }
-        // simulation[i][j] = hue;
-        simul[i][j].value = hue;
-        hue = hue >= 1 ? 0 : hue + INCR;
+        // simulation[i][j] = hue_value;
+        simul[i][j].hue_value = hue_value;
+        hue_value = hue_value >= 1 ? 0 : hue_value + POINT_VALUE_INCREMENT;
         return true;
     }
 
@@ -147,7 +149,7 @@ public class SandSimul {
     //                   above = simulation[i][j - 1],
     //                   side = -1;
 
-    //             int dir = dirs[r.nextInt(2)];
+    //             int dir = DIRS[r.nextInt(2)];
     //             if (validIndex(i + dir, j)) {
     //                 side = simulation[i + dir][j];
     //             }
@@ -177,37 +179,37 @@ public class SandSimul {
         Random r = new Random();
         for (int i = rows - 1; i >= 0; i--) {
             for (int j = cols - 1; j > 0; j--) {
-                Point above = simul[i][j - 1],
-                      side = null;
+                SandGrain above = simul[i][j - 1],
+                          side = null;
 
-                int dir = dirs[r.nextInt(2)];
+                int dir = DIRS[r.nextInt(2)];
                 if (validIndex(i + dir, j)) {
                     side = simul[i + dir][j];
                 }
 
-                if (above.value > 0) {
-                    int velocity = above.velocity;
-                    int idx = j - 1 + velocity;
-                    while ((!(validIndex(i, idx)) || simul[i][idx].value > 0) && idx != j - 1) {
+                if (above.hue_value > 0) {
+                    int idx = j - 1 + above.velocity;
+                    while ((!validIndex(i, idx) || simul[i][idx].hue_value > 0) && idx != j - 1) {
                         idx--;
                     }
                     if (idx == j - 1) {
                         //above.resetAccel();
-                        if (side != null && side.value == 0) {
-                            side.value = above.value;
-                            above.value = 0;
+                        if (side != null && side.hue_value == 0) {
+                            side.hue_value = above.hue_value;
+                            above.hue_value = 0;
                             updated = 1;
-                        } else if (validIndex(i - dir, j) && simul[i - dir][j].value == 0) {
-                            simul[i - dir][j].value = above.value;
-                            above.value = 0;
+                        } else if (validIndex(i - dir, j) && simul[i - dir][j].hue_value == 0) {
+                            simul[i - dir][j].hue_value = above.hue_value;
+                            above.hue_value = 0;
                             updated = 1;
                         }
                         continue;
                     }
-                    simul[i][idx].value = above.value;
-                    simul[i][idx].velocity = above.velocity;
-                    simul[i][idx].increaseVelocity();
-                    above.value = 0;
+                    SandGrain curr = simul[i][idx];
+                    curr.hue_value = above.hue_value;
+                    curr.velocity = above.velocity;
+                    curr.increaseVelocity();
+                    above.hue_value = 0;
                     above.resetVelocity();
                     updated = 1;
                 }
@@ -229,16 +231,16 @@ public class SandSimul {
     // }
 
     /**
-     * Returns the value of the Point at the given matrix index.
+     * Returns the hue_value of the SandGrain at the given matrix index.
      * @param i
      * @param j
-     * @return the value of the Point ([0, 1]).
+     * @return the hue_value of the SandGrain ([0, 1]).
      */
     public float state(int i, int j) {
         if (!validIndex(i, j)) {
             return -1;
         }
-        return simul[i][j].value;
+        return simul[i][j].hue_value;
     }
     /**
      * Returns the number of rows of this Simulator.
@@ -255,7 +257,7 @@ public class SandSimul {
      * Resets this Simulator. All the Points will have
      * their values set to zero.
      */
-    public void reset() {
+    public void clear() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 // simulation[i][j] = 0;
@@ -266,12 +268,12 @@ public class SandSimul {
 
     /**
      * Prints the Simulator's grid on the terminal.
-     * The printes values correspond to the Point's value.
+     * The printes values correspond to the SandGrain's hue_value.
      */
     public void print() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                System.out.print(simul[i][j].value + " ");
+                System.out.print(simul[i][j].hue_value + " ");
             }
             System.out.println();
         }
