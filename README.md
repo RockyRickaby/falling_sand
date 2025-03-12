@@ -1,18 +1,18 @@
-## Getting Started
+# Falling Sand Simulator
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+This is a simple small little project. It's not exactly accurate when it comes to physics.
 
-## Folder Structure
+This was made following [this tutorial](https://www.youtube.com/watch?v=L4u7Zy_b868) with some parts adapted to work with Java. 
 
-The workspace contains two folders by default, where:
+This project has no external dependencies.
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+## Building and running
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+Run these commands on the command line to build and then run this little simulator:
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+```console
+$ mvn package
+$ java -jar ./target/FallingSandSimulator-<current version>.jar
+```
 
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+The current version can be found inside the POM file.

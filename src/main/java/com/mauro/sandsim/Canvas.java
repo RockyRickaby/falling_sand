@@ -1,3 +1,5 @@
+package com.mauro.sandsim;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -37,7 +39,7 @@ public class Canvas extends JFrame {
         isRunning = false;
         subCanvas = new SandSimul();
         timer = new Timer(DELAY, e -> update());
-
+        
         this.setBackground(Color.black);
         this.setTitle("Falling Sand");
         this.add(generateCanvas());

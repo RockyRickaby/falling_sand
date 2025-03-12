@@ -1,3 +1,5 @@
+package com.mauro.sandsim;
+
 import java.util.Random;
 
 /**
@@ -139,37 +141,6 @@ public class SandSimul {
             }
         }
     }
-
-    // public void tick() {
-    //     updated = 0;
-    //     Random r = new Random();
-    //     for (int i = rows - 1; i >= 0; i--) {
-    //         for (int j = cols - 1; j > 0; j--) {
-    //             float current = simulation[i][j],
-    //                   above = simulation[i][j - 1],
-    //                   side = -1;
-
-    //             int dir = DIRS[r.nextInt(2)];
-    //             if (validIndex(i + dir, j)) {
-    //                 side = simulation[i + dir][j];
-    //             }
-
-    //             if (current == 0 && above > 0) {
-    //                 simulation[i][j] = above;
-    //                 simulation[i][j - 1] = 0;
-    //                 updated = 1;
-    //             } else if (side == 0 && above > 0) {
-    //                 simulation[i + dir][j] = above;
-    //                 simulation[i][j - 1] = 0;
-    //                 updated = 1;
-    //             } else if (validIndex(i - dir, j) && simulation[i - dir][j] == 0 && above > 0) {
-    //                 simulation[i - dir][j] = above;
-    //                 simulation[i][j - 1] = 0;
-    //                 updated = 1;
-    //             }
-    //         }
-    //     }
-    // }
 
     /**
      * Updates the current state of the Simulator once.

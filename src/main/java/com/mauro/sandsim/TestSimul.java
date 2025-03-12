@@ -1,3 +1,5 @@
+package com.mauro.sandsim;
+
 public class TestSimul {
     public static void main(String[] args) {
         SandSimul sand = new SandSimul();

@@ -1,3 +1,5 @@
+package com.mauro.sandsim;
+
 import javax.swing.SwingUtilities;
 
 public class App {
